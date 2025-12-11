@@ -1,0 +1,24 @@
+leetcode 144 二分木の前序遍歴（Preorder Traversal）のコードメモ
+leetcode 144 
+// 再帰的な方法による二分木の前序遍歴
+// 1. 再帰関数の引数と戻り値を確定する
+// 2. 終了条件を確定する
+// 3. 単層の再帰のロジックを確定する
+class Solution {
+public:
+    // 1. 再帰関数の引数と戻り値を確定する
+    void Traversal(TreeNode* cur, vector<int>& vec) {
+        // 2. 終了条件を確定する
+        if (cur == nullptr) return;
+        // 3. 単層の再帰のロジックを確定する
+        vec.push_back(cur->val); // 根（中）
+        // cout << cur->val << endl;
+        Traversal(cur->left, vec);  // 左
+        Traversal(cur->right, vec); // 右
+    }
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> arr;
+        Traversal(root, arr);
+        return arr;
+    }
+};
