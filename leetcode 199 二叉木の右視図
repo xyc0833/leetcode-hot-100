@@ -1,0 +1,57 @@
+leetcode 199 二叉木の右視図
+
+/**
+ * 二叉木ノードの定義
+ * struct TreeNode {
+ *     int val;                // ノードの値
+ *     TreeNode *left;         // 左子ノードへのポインタ
+ *     TreeNode *right;        // 右子ノードへのポインタ
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}  // コンストラクタ1
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}  // コンストラクタ2
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}  // コンストラクタ3
+ * };
+ */
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        // 層ごとの遍歴（BFS）で、各層の最右端ノードの値を取得
+        // キューを使用してデータを処理
+        // 結果は2次元配列ではなく1次元配列で直接格納
+        queue<TreeNode*> q;
+        vector<int> res;  // 結果格納用配列
+        if(root == nullptr) return res;  // 空木の場合は空配列を返す
+        q.push(root);  // 根ノードをキューに追加
+        
+        while(!q.empty()){  // キューが空になるまで繰り返し
+            // 固定サイズで処理（sizeは各層のノード数）
+            // 注：que.size()を直接使用しないのは、処理中にサイズが変化するから
+            int size = q.size();
+            for(int i=0; i<size; i++){
+                TreeNode* cur = q.front();  // キューの先頭ノードを取得
+                cout << cur->val << ' ';    // デバッグ用：ノード値出力
+                q.pop();                    // キューから削除
+                
+                // 各層の最右端ノードの値をresに追加（i == size-1の場合）
+                if(i == (size-1)) res.push_back(cur->val);
+                
+                // 子ノードをキューに追加（存在する場合）
+                if(cur->left != nullptr) q.push(cur->left);
+                if(cur->right != nullptr) q.push(cur->right);
+            }
+        }
+        return res;  // 最右端ノード値の配列を返す
+    }
+};
+
+中文	日文	英文（原题用語）
+二叉树	二叉木	Binary Tree
+层序遍历	層ごとの遍歴	Level Order Traversal (BFS)
+队列	キュー	Queue
+节点/结点	ノード	Node
+根节点	根ノード	Root Node
+子节点	子ノード	Child Node
+左子节点	左子ノード	Left Child
+右子节点	右子ノード	Right Child
+空节点	空ノード	Null Node
+固定大小	固定サイズ	Fixed Size
+调试输出	デバッグ出力	Debug Output
