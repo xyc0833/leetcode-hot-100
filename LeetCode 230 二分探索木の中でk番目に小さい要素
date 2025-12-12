@@ -1,0 +1,44 @@
+// LeetCode 230 二分探索木の中でk番目に小さい要素
+// 二分探索木は既にソート済みなので、中序遍歴で対応するソート結果を得る
+
+// カールの反復法を用いた遍歴を試す
+
+class Solution {
+public:
+    // 反復法による中序遍歴
+    int kthSmallest(TreeNode* root, int k) {
+        vector<int> arr;
+        // スタック、配列、ポインタが必要
+        // 遍歴の考え方：最左まで進む
+        stack<TreeNode*> st;
+        vector<int> res;
+        TreeNode* cur = root;
+        if(cur == nullptr) return 0;
+        while(cur != nullptr || st.size()!= 0 ){
+            if(cur!=nullptr){
+                st.push(cur);
+                cur = cur->left;
+            }else{
+                cur = st.top();
+                st.pop();
+                res.push_back(cur->val);
+                cur = cur->right;
+            }
+        }
+        for(auto p: res) cout<<p <<" ";
+        return res[k-1];
+    }
+};
+
+
+中文	日文	英文（原题用語）
+二叉搜索树	二分探索木	Binary Search Tree
+中序遍历	中序遍歴	Inorder Traversal
+迭代法	反復法	Iterative Method
+栈	スタック	Stack
+指针	ポインタ	Pointer
+数组	配列	Array/Vector
+左子树	左部分木	Left Subtree
+右子树	右部分木	Right Subtree
+当前节点	現在のノード	Current Node
+空节点	空ノード	Null Node
