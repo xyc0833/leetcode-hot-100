@@ -1,0 +1,51 @@
+leetcode 200. 島の数
+'1'（陸地）と '0'（水）で構成された m x n の 2次元グリッドが与えられます。島は、水平または垂直に隣接した '1'（陸地）の集合で、対角線方向の接続は含まれません。グリッドの島の総数を返してください
+class Solution {
+public:
+    // 1. 深さ優先探索 (DFS) - ステップ1: パラメータの決定
+    // 2. 終了条件の決定
+    int dir[4][2] = {0,1,1,0,-1,0,0,-1}; // 4方向移動用の方向配列 (右、下、左、上)
+    
+    void dfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y) {
+        // 既に訪問済みのセルまたは水('0')の場合は終了
+        if (visited[x][y] == true || grid[x][y] == '0') return;
+        
+        // 現在のセルを訪問済みとしてマーク
+        visited[x][y] = true;
+        
+        // 4方向の探索
+        for (int i = 0; i < 4; i++) {
+            int nextx = x + dir[i][0]; // 横方向の座標変化
+            int nexty = y + dir[i][1]; // 縦方向の座標変化
+            
+            // 境界チェック - グリッド外の場合はスキップ
+            if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;
+            
+            // 隣接セルへの再帰呼び出し
+            dfs(grid, visited, nextx, nexty);
+        }
+    }
+    
+    int numIslands(vector<vector<char>>& grid) {
+        // 訪問済みを追跡する行列が必要
+        // セルが'1'で未訪問の場合、結果をインクリメントしてDFS実行
+        // n: 行数, m: 列数
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        vector<vector<bool>> visited(n, vector<bool>(m, false)); // 全セルを未訪問で初期化
+        
+        int result = 0; // 島のカウント
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == '1' && visited[i][j] == false) {
+                    // 新しい島を発見
+                    result++;
+                    dfs(grid, visited, i, j); // 連結陸地全てをマークするDFS実行
+                }
+            }
+        }
+        
+        return result;
+    }
+};
