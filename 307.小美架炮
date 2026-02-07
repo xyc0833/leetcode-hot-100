@@ -1,0 +1,295 @@
+//自己再学习性的敲一遍
+#include<bits/stdc++.h>
+using namespace std;
+
+//先按照豆包的代码 自己再学习一遍
+//四个方向
+int dir[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};
+
+// 安全的坐标哈希函数（替代编码，避免冲突）
+struct PairHash {
+    template <class T1, class T2>
+    size_t operator () (const pair<T1,T2> &p) const {
+        auto h1 = hash<T1>{}(p.first);
+        auto h2 = hash<T2>{}(p.second);
+        return h1 ^ (h2 << 1); // 组合哈希值，避免冲突
+    }
+};
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n;
+    cin >> n;
+    //1 用unordered_set存储炮的坐标(无编码冲突 O(1)查询)
+    unorder_set<pair<int,int>,PairHash> pos_set;
+    //2 保存输入顺序
+    vector<pair<int,int>> cannos(n);
+    //3 存储每个炮的 可攻击数
+    vector<int> ans(n,0);
+
+    //输入炮的坐标
+    for(int i=0;i<n;i++){
+        int x,y;
+        cin>>x>>y;
+        cannos[i] = {x,y};
+        pos_set.insert({x,y});
+    }
+    //先遍历每个炮
+    for(int i=0;i<n;i++){
+        int x = cannos[i].first;
+        int y = cannos[i].second;
+        int count = 0;//可攻击总数
+
+        //遍历四个方向
+        for(int i=0;i<4;i++){
+            int dx = dir[i][0];
+            int dy = dir[i][1];
+            int cannos_nums = 0;//统计当前方向遇到的炮数
+            int step = 1;//从当前位置的下一个格子开始探索
+
+            while(true){
+                //计算当前探索的坐标
+                int nx = x + dx * step;
+                int ny = y + dy * step;
+                //检查当前坐标是否有炮
+                if(pos_set.count({nx,ny})){
+                    cannos_nums++;
+                    if(cannos_nums == 2){
+                        count++;
+                        break;
+                    }
+                }
+                //终止条件1:找到两个炮了 2 连续走了1000步
+                if(cannos_nums >=2 ||step>1000){
+                    break;
+                }
+                step++;
+            }
+        }
+        ans[i] = count;
+    }
+    // 按输入顺序输出结果
+    for(int num : ans){
+        cout << num << '\n';
+    }
+
+    return 0;
+}
+
+
+//没有pair类型的hash值 所以需要指定一个 hash值
+// 定义一个名为PairHash的结构体（可以理解为“哈希规则模板”）
+struct PairHash {
+    // 模板函数：支持任意类型的pair（比如pair<int,int>、pair<long,long>），复用性强
+    template <class T1, class T2>
+    // operator()：重载“()”运算符，让PairHash对象能像函数一样被调用
+    // const保证函数内不修改参数p；返回值size_t是哈希值的类型（无符号整数）
+    size_t operator () (const pair<T1,T2> &p) const {
+        // 1. 给pair的第一个值（x坐标）计算哈希值
+        auto h1 = hash<T1>{}(p.first);
+        // 2. 给pair的第二个值（y坐标）计算哈希值
+        auto h2 = hash<T2>{}(p.second);
+        // 3. 组合两个哈希值，生成最终的唯一哈希值
+        return h1 ^ (h2 << 1); // 组合方式：异或 + 左移，减少哈希冲突
+    }
+};
+
+
+//这个代码是 豆包给的 样例对了 但是时间超时了 先学习一下
+
+#include<bits/stdc++.h>
+using namespace std;
+
+// 四个方向：右、左、下、上（和你思路一致）
+int dir[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+
+// 安全的坐标哈希函数（替代编码，避免冲突）
+struct PairHash {
+    template <class T1, class T2>
+    size_t operator () (const pair<T1,T2> &p) const {
+        auto h1 = hash<T1>{}(p.first);
+        auto h2 = hash<T2>{}(p.second);
+        return h1 ^ (h2 << 1); // 组合哈希值，避免冲突
+    }
+};
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+
+    // 关键1：用unordered_set存储炮的坐标（无编码冲突，O(1)查询）
+    unordered_set<pair<int, int>, PairHash> pos_set;
+    // 关键2：保存输入顺序（避免map排序导致输出乱序）
+    vector<pair<int, int>> cannons(n);
+    // 关键3：存储每个炮的可攻击数（替代你的map）
+    vector<int> ans(n, 0);
+
+    // 输入炮的坐标
+    for(int i = 0; i < n; i++){
+        int x, y;
+        cin >> x >> y;
+        cannons[i] = {x, y};
+        pos_set.insert({x, y});
+    }
+
+    // 遍历每个炮，计算可攻击数（完全顺着你的思路：四个方向探索）
+    for(int i = 0; i < n; i++){
+        int x = cannons[i].first;
+        int y = cannons[i].second;
+        int count = 0; // 可攻击总数（替代你的value）
+
+        // 遍历四个方向
+        for(int d = 0; d < 4; d++){
+            int dx = dir[d][0];
+            int dy = dir[d][1];
+            int cannon_num = 0; // 统计当前方向遇到的炮数（替代你的path）
+            int step = 1;       // 从当前位置的下一个格子开始探索
+
+            while(true){
+                // 计算当前探索的坐标
+                int nx = x + dx * step;
+                int ny = y + dy * step;
+
+                // 检查当前坐标是否有炮
+                if(pos_set.count({nx, ny})){
+                    cannon_num++;
+                    // 规则：第1个炮是炮架，第2个炮是可攻击目标
+                    if(cannon_num == 2){
+                        count++; // 该方向贡献1个可攻击目标
+                        break;   // 找到目标，停止当前方向探索
+                    }
+                }
+
+                // 终止条件：1. 已经找到第2个炮 2. 连续走1000步没找到（炮数量有限，足够覆盖）
+                if(cannon_num >= 2 || step > 1000){
+                    break;
+                }
+                step++;
+            }
+        }
+
+        ans[i] = count;
+    }
+
+    // 按输入顺序输出结果
+    for(int num : ans){
+        cout << num << '\n';
+    }
+
+    return 0;
+}
+
+
+//自己写的 二维数组的思路是错的
+#include<bits/stdc++.h>
+using namespace std;
+const int N = 1e2+10;
+//这里如果超出范围了应该怎么操作
+//上下左右四个方向的代码 参考代码随想录
+int dir[4][2]= {0,1,0,-1,1,0,-1,0};
+int main(){
+    //加速输入输出的代码
+    //ios::sync_with_stdio(false);
+    //cin.tie(nullptr);
+
+    int n;
+    cin>>n;
+    //cout<<n;
+    //二维数组好像不能定义的太大
+    vector<vector<int>>arr(N,vector<int>(N,0));
+    //我想用 （<x,y>,value） 的方式 存储数据 应该怎么弄
+    //定义 key是坐标 value是用来存储可以攻击到炮的数量
+    map<pair<int,int>,int> cord_map;
+    while(n--){
+        int x,y;
+        cin>>x>>y;
+        arr[x][y] = 1;
+        cord_map[{x,y}] = 0;//都先初始化为0
+    }
+    // for(int i=0;i<arr.size();i++){
+    //     for(int j=0;j<arr[0].size();j++){
+    //         cout<<arr[i][j]<<" ";
+    //     }
+    //     cout<<endl;
+    // }
+
+    //然后如何针对 map去做遍历
+    for(auto p:cord_map){
+        //这里怎么取到他的x y值？
+        //cout<<p.first.first<<endl;
+        int x = p.first.first;
+        int y = p.first.second;
+        int value = p.second;//value的值初始化为0的
+        //cout<<x<<" "<<y<<" "<<value<<endl;
+        //边界情况如何处理？
+        if(x<0 ||x>arr.size()||y<0||y>arr[0].size()){
+            continue;//坐标越界 跳过探索
+        }
+
+        //然后需要针对四个方向进行探索
+        //先尝试写右边的代码
+        for(int j = y;j<arr[0].size()-1;j++){
+            //需要定义一个临时变量 
+            //如果在右边的方向遇到两个的炮 value + 1
+            int path = 0;
+            if(arr[x][j] == 1){
+                path = path + 1;
+            }
+            if(path >=2 ){
+                value = value + 1;
+                break;//停止 for int j的循环break
+            }
+        }
+        //左边的代码也是一样写的 for循环反过来
+        for(int j = y-1;j>=0;j--){
+            //需要定义一个临时变量 
+            //如果在右边的方向遇到两个的炮 value + 1
+            int path = 0;
+            if(arr[x][j] == 1){
+                path = path + 1;
+            }
+            if(path >=2 ){
+                value = value + 1;
+                break;//停止 for int j的循环break
+            }
+        }
+        //处理下面的代码
+        for(int i = x;i<arr.size()-1;i++){
+            int path = 0;
+            if(arr[i][y] ==1 ){
+                path = path + 1;
+            }
+            if(path>=2){
+                value = value +1;
+                break;
+            }
+        }
+        //处理上面的代码
+        for(int i = x-1;i>=0;i--){
+            int path = 0;
+            if(arr[i][y] ==1 ){
+                path = path + 1;
+            }
+            if(path>=2){
+                value = value +1;
+                break;
+            }
+        }
+        //最后把 value值 存进去
+        cord_map[{x,y}] = value;
+    }
+
+    //最后遍历输出
+    for(auto b : cord_map){
+        cout<<b.second<<endl;
+    }
+
+
+
+
+    return 0;
+}
